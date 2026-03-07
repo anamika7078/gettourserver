@@ -15,21 +15,50 @@ const {
     DB_USER,
     DB_PASSWORD,
     DB_NAME,
+    DB_PORT = 3306,
     DB_CONNECTION_LIMIT = 10,
+    DB_SSL = false,
 } = process.env;
 
 // First ensure the database exists using a temporary connection
 function ensureDatabase(callback) {
-    const tmp = mysql.createConnection({
+    // Validate required environment variables
+    if (!DB_HOST || !DB_USER || !DB_PASSWORD || !DB_NAME) {
+        const missing = [];
+        if (!DB_HOST) missing.push('DB_HOST');
+        if (!DB_USER) missing.push('DB_USER');
+        if (!DB_PASSWORD) missing.push('DB_PASSWORD');
+        if (!DB_NAME) missing.push('DB_NAME');
+        return callback(new Error(`Missing required environment variables: ${missing.join(', ')}`));
+    }
+
+    const connectionConfig = {
         host: DB_HOST,
         user: DB_USER,
         password: DB_PASSWORD,
+        port: parseInt(DB_PORT, 10),
         multipleStatements: true,
-    });
+        connectTimeout: 10000, // 10 second timeout
+    };
+
+    // Add SSL if required (common for cloud databases)
+    if (DB_SSL === 'true' || DB_SSL === true) {
+        connectionConfig.ssl = { rejectUnauthorized: false };
+    }
+
+    const tmp = mysql.createConnection(connectionConfig);
     tmp.connect((err) => {
-        if (err) return callback(err);
+        if (err) {
+            console.error(`❌ Database connection failed to ${DB_HOST}:`, err.message);
+            console.error(`   Error code: ${err.code || 'UNKNOWN'}`);
+            return callback(err);
+        }
         tmp.query(`CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\``, (createErr) => {
-            if (createErr) return callback(createErr);
+            if (createErr) {
+                console.error(`❌ Failed to create database '${DB_NAME}':`, createErr.message);
+                tmp.end();
+                return callback(createErr);
+            }
             tmp.end();
             callback(null);
         });
@@ -41,18 +70,32 @@ let pool; // exported later
 ensureDatabase((err) => {
     if (err) {
         console.error("❌ Failed ensuring database:", err.message);
+        console.error("   Please check your database configuration:");
+        console.error(`   - DB_HOST: ${DB_HOST ? '✓ Set' : '✗ Missing'}`);
+        console.error(`   - DB_USER: ${DB_USER ? '✓ Set' : '✗ Missing'}`);
+        console.error(`   - DB_PASSWORD: ${DB_PASSWORD ? '✓ Set' : '✗ Missing'}`);
+        console.error(`   - DB_NAME: ${DB_NAME ? '✓ Set' : '✗ Missing'}`);
         process.exit(1);
     }
-    pool = mysql.createPool({
+    const poolConfig = {
         host: DB_HOST,
         user: DB_USER,
         password: DB_PASSWORD,
         database: DB_NAME,
+        port: parseInt(DB_PORT, 10),
         waitForConnections: true,
         connectionLimit: parseInt(DB_CONNECTION_LIMIT, 10),
         queueLimit: 0,
         multipleStatements: true,
-    });
+        connectTimeout: 10000,
+    };
+
+    // Add SSL if required (common for cloud databases)
+    if (DB_SSL === 'true' || DB_SSL === true) {
+        poolConfig.ssl = { rejectUnauthorized: false };
+    }
+
+    pool = mysql.createPool(poolConfig);
     console.log(`✅ MySQL pool ready (db: ${DB_NAME})`);
 
     // Keepalive ping every 15 minutes to avoid idle disconnect (adjust if needed)
