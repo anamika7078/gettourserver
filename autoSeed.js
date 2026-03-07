@@ -236,51 +236,50 @@ function insertDummyData() {
     // 6. Holiday Packages
     setTimeout(() => {
         const holidayPackages = [
-                {
-                    title: "European Adventure - 7 Days",
-                    destination: "Paris, Rome, Barcelona",
-                    duration: "7 days / 6 nights",
-                    price: 2500.00,
-                    category: "Europe",
-                    details: "Explore three of Europe's most beautiful cities. Includes flights, hotels, and guided tours.",
-                    images: JSON.stringify(["h1.jpg", "h2.jpg", "h3.jpg"]),
-                },
-                {
-                    title: "Tropical Paradise - Maldives",
-                    destination: "Maldives",
-                    duration: "5 days / 4 nights",
-                    price: 1800.00,
-                    category: "Beach",
-                    details: "Relax in luxury water villas with crystal-clear waters. All meals and water sports included.",
-                    images: JSON.stringify(["h1.jpg", "h2.jpg"]),
-                },
-                {
-                    title: "Asian Discovery Tour",
-                    destination: "Tokyo, Singapore, Bangkok",
-                    duration: "10 days / 9 nights",
-                    price: 3200.00,
-                    category: "Asia",
-                    details: "Experience the best of Asia with cultural tours and amazing food.",
-                    images: JSON.stringify(["h3.jpg", "h4.jpg"]),
-                },
-                {
-                    title: "Safari Adventure - Kenya",
-                    destination: "Nairobi, Masai Mara",
-                    duration: "6 days / 5 nights",
-                    price: 2200.00,
-                    category: "Adventure",
-                    details: "Witness the Great Migration and Big Five. Includes game drives and accommodation.",
-                    images: JSON.stringify(["h1.jpg", "h2.jpg"]),
-                },
-            ];
+            {
+                title: "European Adventure - 7 Days",
+                destination: "Paris, Rome, Barcelona",
+                duration: "7 days / 6 nights",
+                price: 2500.00,
+                category: "Europe",
+                details: "Explore three of Europe's most beautiful cities. Includes flights, hotels, and guided tours.",
+                images: JSON.stringify(["h1.jpg", "h2.jpg", "h3.jpg"]),
+            },
+            {
+                title: "Tropical Paradise - Maldives",
+                destination: "Maldives",
+                duration: "5 days / 4 nights",
+                price: 1800.00,
+                category: "Beach",
+                details: "Relax in luxury water villas with crystal-clear waters. All meals and water sports included.",
+                images: JSON.stringify(["h1.jpg", "h2.jpg"]),
+            },
+            {
+                title: "Asian Discovery Tour",
+                destination: "Tokyo, Singapore, Bangkok",
+                duration: "10 days / 9 nights",
+                price: 3200.00,
+                category: "Asia",
+                details: "Experience the best of Asia with cultural tours and amazing food.",
+                images: JSON.stringify(["h3.jpg", "h4.jpg"]),
+            },
+            {
+                title: "Safari Adventure - Kenya",
+                destination: "Nairobi, Masai Mara",
+                duration: "6 days / 5 nights",
+                price: 2200.00,
+                category: "Adventure",
+                details: "Witness the Great Migration and Big Five. Includes game drives and accommodation.",
+                images: JSON.stringify(["h1.jpg", "h2.jpg"]),
+            },
+        ];
 
-            holidayPackages.forEach((pkg) => {
-                db.query(
-                    `INSERT IGNORE INTO holiday_packages (title, destination, duration, price, category, details, images, created_at) 
-                     VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`,
-                    [pkg.title, pkg.destination, pkg.duration, pkg.price, pkg.category, pkg.details, pkg.images]
-                );
-            });
+        holidayPackages.forEach((pkg) => {
+            db.query(
+                `INSERT IGNORE INTO holiday_packages (title, destination, duration, price, category, details, images, created_at) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`,
+                [pkg.title, pkg.destination, pkg.duration, pkg.price, pkg.category, pkg.details, pkg.images]
+            );
         });
     }, 1500);
 
