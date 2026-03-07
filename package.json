@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon app.js",
     "start": "node app.js",
-    "seed": "node seedData.js"
+    "seed": "node seedData.js",
+    "add-data": "node addDummyData.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
