@@ -152,9 +152,18 @@ const ActivityModel = {
     },
 };
 
-// Auto-ensure table at startup and log a friendly message
-ActivityModel.ensureTable()
-    .then(() => console.log("🗂️ activities table ensured."))
-    .catch((err) => console.error("❌ Failed ensuring activities table:", err));
+// Auto-ensure table at startup and log a friendly message (skip if JSON mode)
+if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+    ActivityModel.ensureTable()
+        .then(() => console.log("🗂️ activities table ensured."))
+        .catch((err) => {
+            // Only log error if not in JSON mode (in JSON mode, this is expected)
+            if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+                console.error("❌ Failed ensuring activities table:", err.message);
+            }
+        });
+} else {
+    console.log("📦 JSON mode: Skipping activities table creation");
+}
 
 module.exports = ActivityModel;

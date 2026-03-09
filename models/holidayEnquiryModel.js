@@ -190,8 +190,12 @@ const deleteHolidayEnquiry = async (id) => {
     });
 };
 
-// Auto ensure table exists
-ensureHolidayEnquiryTable();
+// Auto ensure table exists (skip if JSON mode)
+if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+    ensureHolidayEnquiryTable();
+} else {
+    console.log("📦 JSON mode: Skipping holiday_enquiries table creation");
+}
 
 module.exports = {
     ensureHolidayEnquiryTable,

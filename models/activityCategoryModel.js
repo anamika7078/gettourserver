@@ -83,9 +83,17 @@ const ActivityCategoryModel = {
     },
 };
 
-// auto ensure
-ActivityCategoryModel.ensureTable()
-    .then(() => console.log("🗂️ activity_categories table ensured."))
-    .catch((e) => console.error("❌ Failed ensuring activity_categories:", e));
+// auto ensure (skip if JSON mode)
+if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+    ActivityCategoryModel.ensureTable()
+        .then(() => console.log("🗂️ activity_categories table ensured."))
+        .catch((e) => {
+            if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+                console.error("❌ Failed ensuring activity_categories:", e.message);
+            }
+        });
+} else {
+    console.log("📦 JSON mode: Skipping activity_categories table creation");
+}
 
 module.exports = ActivityCategoryModel;

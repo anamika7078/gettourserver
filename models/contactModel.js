@@ -103,7 +103,11 @@ const insertContactMessage = (data, callback) => {
     });
 };
 
-// ✅ Auto-create table when model file is loaded
-createContactTable();
+// ✅ Auto-create table when model file is loaded (skip if JSON mode)
+if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+    createContactTable();
+} else {
+    console.log("📦 JSON mode: Skipping contact_messages table creation");
+}
 
 module.exports = { createContactTable, insertContactMessage };

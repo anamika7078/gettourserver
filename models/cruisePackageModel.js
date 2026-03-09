@@ -203,8 +203,12 @@ const deleteCruise = async (id) => {
     });
 };
 
-// auto-create table
-ensureCruiseTable();
+// auto-create table (skip if JSON mode)
+if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+    ensureCruiseTable();
+} else {
+    console.log("📦 JSON mode: Skipping cruises table creation");
+}
 
 module.exports = {
     ensureCruiseTable,

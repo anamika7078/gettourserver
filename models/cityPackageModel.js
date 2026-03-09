@@ -202,16 +202,22 @@ const addCategoryIdColumn = () => {
     });
 };
 
-// Initialize table and column
-db.query(createTableQuery, (err) => {
-    if (err) {
-        console.error("Error creating city_packages table:", err);
-    } else {
-        console.log("🗂️ city_packages table ensured.");
-        // Check and add categoryId column if needed
-        setTimeout(addCategoryIdColumn, 1500);
-    }
-});
+// Initialize table and column (skip if JSON mode)
+if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+    db.query(createTableQuery, (err) => {
+        if (err) {
+            if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+                console.error("Error creating city_packages table:", err.message);
+            }
+        } else {
+            console.log("🗂️ city_packages table ensured.");
+            // Check and add categoryId column if needed
+            setTimeout(addCategoryIdColumn, 1500);
+        }
+    });
+} else {
+    console.log("📦 JSON mode: Skipping city_packages table creation");
+}
 
 const CityPackage = {
     // Create new city package

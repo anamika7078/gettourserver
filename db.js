@@ -176,8 +176,20 @@ function runOrQueue(exec) {
 
 function flushPending() {
     if (!pool || pendingQueries.length === 0) return;
+    // Skip flushing if JSON mode is enabled
+    if (process.env.USE_JSON_DATA === "true" || process.env.USE_JSON_DATA === "1") {
+        pendingQueries.splice(0); // Clear queue without executing
+        return;
+    }
     pendingQueries.splice(0).forEach(fn => {
-        try { fn(); } catch (e) { console.error("❌ Pending query failed:", e.message); }
+        try { 
+            fn(); 
+        } catch (e) { 
+            // Don't crash on pending query failures - just log if not JSON mode
+            if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+                console.error("❌ Pending query failed:", e.message);
+            }
+        }
     });
 }
 

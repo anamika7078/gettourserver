@@ -2,21 +2,28 @@ const db = require("../db");
 
 const CityTourCategory = {};
 
-// Create table if not exists with image field
-db.query(
-    `CREATE TABLE IF NOT EXISTS city_tour_categories (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        image VARCHAR(255) DEFAULT NULL,
-        cityName VARCHAR(255) DEFAULT NULL,
-        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-    )`,
-    (err) => {
-        if (err) console.error("Error creating city_tour_categories table:", err);
-        else console.log("✓ city_tour_categories table ready");
-    }
-);
+// Create table if not exists with image field (skip if JSON mode)
+if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+    db.query(
+        `CREATE TABLE IF NOT EXISTS city_tour_categories (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            image VARCHAR(255) DEFAULT NULL,
+            cityName VARCHAR(255) DEFAULT NULL,
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        )`,
+        (err) => {
+            if (err && process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+                console.error("Error creating city_tour_categories table:", err.message);
+            } else if (!err) {
+                console.log("✓ city_tour_categories table ready");
+            }
+        }
+    );
+} else {
+    console.log("📦 JSON mode: Skipping city_tour_categories table creation");
+}
 
 // Add image column if it doesn't exist
 const addImageColumn = () => {
@@ -47,8 +54,10 @@ const addImageColumn = () => {
     });
 };
 
-// Check and add image column
-setTimeout(addImageColumn, 1000);
+// Check and add image column (skip if JSON mode)
+if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+    setTimeout(addImageColumn, 1000);
+}
 
 // Add cityName column if it doesn't exist
 const addCityNameColumn = () => {
@@ -79,7 +88,10 @@ const addCityNameColumn = () => {
     });
 };
 
-setTimeout(addCityNameColumn, 1200);
+// Check and add cityName column (skip if JSON mode)
+if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+    setTimeout(addCityNameColumn, 1200);
+}
 
 // Get all categories
 CityTourCategory.getAll = (callback) => {

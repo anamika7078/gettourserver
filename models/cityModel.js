@@ -2,20 +2,27 @@ const db = require("../db");
 
 const City = {};
 
-// Create table if not exists
-db.query(
-    `CREATE TABLE IF NOT EXISTS cities (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(255) NOT NULL UNIQUE,
-        image VARCHAR(255) DEFAULT NULL,
-        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-    )`,
-    (err) => {
-        if (err) console.error("Error creating cities table:", err);
-        else console.log("✓ cities table ready");
-    }
-);
+// Create table if not exists (skip if JSON mode)
+if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+    db.query(
+        `CREATE TABLE IF NOT EXISTS cities (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(255) NOT NULL UNIQUE,
+            image VARCHAR(255) DEFAULT NULL,
+            createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        )`,
+        (err) => {
+            if (err && process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+                console.error("Error creating cities table:", err.message);
+            } else if (!err) {
+                console.log("✓ cities table ready");
+            }
+        }
+    );
+} else {
+    console.log("📦 JSON mode: Skipping cities table creation");
+}
 
 // Get all cities
 City.getAll = (callback) => {

@@ -47,6 +47,14 @@ const VisaSubjectModel = {
     },
 };
 
-VisaSubjectModel.ensureTable().catch((e) => console.error("❌ visa_subjects ensure failed", e));
+if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+    VisaSubjectModel.ensureTable().catch((e) => {
+        if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+            console.error("❌ visa_subjects ensure failed", e.message);
+        }
+    });
+} else {
+    console.log("📦 JSON mode: Skipping visa_subjects table creation");
+}
 
 module.exports = VisaSubjectModel;

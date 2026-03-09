@@ -102,9 +102,17 @@ const HolidayPackageModel = {
     },
 };
 
-// Auto-ensure
-HolidayPackageModel.ensureTable()
-    .then(() => console.log("🗂️ holiday_packages table ensured."))
-    .catch((err) => console.error("❌ Failed ensuring holiday_packages table:", err));
+// Auto-ensure (skip if JSON mode)
+if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+    HolidayPackageModel.ensureTable()
+        .then(() => console.log("🗂️ holiday_packages table ensured."))
+        .catch((err) => {
+            if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+                console.error("❌ Failed ensuring holiday_packages table:", err.message);
+            }
+        });
+} else {
+    console.log("📦 JSON mode: Skipping holiday_packages table creation");
+}
 
 module.exports = HolidayPackageModel;

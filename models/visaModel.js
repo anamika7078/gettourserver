@@ -224,8 +224,16 @@ const deleteVisa = async (id) => {
     });
 };
 
-// Auto ensure table exists on import
-ensureVisaTable().catch((e) => console.error("ensureVisaTable failed:", e));
+// Auto ensure table exists on import (skip if JSON mode)
+if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+    ensureVisaTable().catch((e) => {
+        if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+            console.error("ensureVisaTable failed:", e.message);
+        }
+    });
+} else {
+    console.log("📦 JSON mode: Skipping visas table creation");
+}
 
 // Export functions (CommonJS)
 module.exports = {

@@ -197,8 +197,12 @@ const deleteCruiseEnquiry = async (id) => {
     });
 };
 
-// auto ensure
-ensureCruiseEnquiryTable();
+// auto ensure (skip if JSON mode)
+if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+    ensureCruiseEnquiryTable();
+} else {
+    console.log("📦 JSON mode: Skipping cruise_enquiries table creation");
+}
 
 module.exports = {
     ensureCruiseEnquiryTable,

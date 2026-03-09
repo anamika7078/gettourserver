@@ -47,6 +47,14 @@ const HolidayCategoryModel = {
     },
 };
 
-HolidayCategoryModel.ensureTable().catch((e) => console.error("❌ holiday_categories ensure failed", e));
+if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+    HolidayCategoryModel.ensureTable().catch((e) => {
+        if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+            console.error("❌ holiday_categories ensure failed", e.message);
+        }
+    });
+} else {
+    console.log("📦 JSON mode: Skipping holiday_categories table creation");
+}
 
 module.exports = HolidayCategoryModel;

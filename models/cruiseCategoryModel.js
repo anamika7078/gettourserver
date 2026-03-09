@@ -55,6 +55,14 @@ const CruiseCategoryModel = {
     },
 };
 
-CruiseCategoryModel.ensureTable().catch((e) => console.error("❌ cruise_categories ensure failed", e));
+if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+    CruiseCategoryModel.ensureTable().catch((e) => {
+        if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+            console.error("❌ cruise_categories ensure failed", e.message);
+        }
+    });
+} else {
+    console.log("📦 JSON mode: Skipping cruise_categories table creation");
+}
 
 module.exports = CruiseCategoryModel;

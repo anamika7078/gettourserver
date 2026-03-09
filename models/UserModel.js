@@ -16,6 +16,12 @@ class UserModel {
     }
 
     init() {
+        // Skip table creation if JSON mode is enabled
+        if (process.env.USE_JSON_DATA === "true" || process.env.USE_JSON_DATA === "1") {
+            console.log("📦 JSON mode: Skipping users table creation");
+            return;
+        }
+        
         // Add resetToken and resetExpires columns (if not already present)
         const sql = `
       CREATE TABLE IF NOT EXISTS users (
@@ -34,7 +40,9 @@ class UserModel {
     `;
         db.query(sql, (err) => {
             if (err) {
-                console.error("❌ Error creating 'users' table:", err);
+                if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+                    console.error("❌ Error creating 'users' table:", err.message);
+                }
             } else {
                 console.log("✅ 'users' table is ready in the database.");
             }

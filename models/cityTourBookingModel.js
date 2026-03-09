@@ -99,9 +99,17 @@ const CityTourBookingModel = {
     },
 };
 
-// Auto-ensure on import
-CityTourBookingModel.ensureTable()
-    .then(() => console.log("🗂️ city_tour_bookings table ensured."))
-    .catch((err) => console.error("❌ Failed ensuring city_tour_bookings table:", err));
+// Auto-ensure on import (skip if JSON mode)
+if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+    CityTourBookingModel.ensureTable()
+        .then(() => console.log("🗂️ city_tour_bookings table ensured."))
+        .catch((err) => {
+            if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+                console.error("❌ Failed ensuring city_tour_bookings table:", err.message);
+            }
+        });
+} else {
+    console.log("📦 JSON mode: Skipping city_tour_bookings table creation");
+}
 
 module.exports = CityTourBookingModel;
