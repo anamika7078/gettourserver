@@ -107,11 +107,11 @@ exports.createCityPackage = (req, res) => {
 
 // Get all city packages
 exports.getAllCityPackages = (req, res) => {
-    // Try JSON data first if enabled
-    const { getJsonData } = require("../utils/jsonDataLoader");
-    const jsonData = getJsonData("cityPackages");
-    if (jsonData && jsonData.length > 0) {
-        const packages = jsonData.map((pkg) => {
+    const { getJsonData, shouldPreferJsonData } = require("../utils/jsonDataLoader");
+    
+    // Helper function to process packages
+    const processPackages = (packages) => {
+        return packages.map((pkg) => {
             try {
                 pkg.images = pkg.images ? JSON.parse(pkg.images) : [];
             } catch (e) {
@@ -122,31 +122,30 @@ exports.getAllCityPackages = (req, res) => {
             }
             return pkg;
         });
-        return res.status(200).json({
-            success: true,
-            data: packages,
-        });
+    };
+    
+    // If JSON mode is enabled, use JSON first and skip database
+    if (shouldPreferJsonData()) {
+        const jsonData = getJsonData("cityPackages");
+        if (jsonData && jsonData.length > 0) {
+            const packages = processPackages(jsonData);
+            console.log("✓ Serving city packages from JSON data");
+            return res.status(200).json({
+                success: true,
+                data: packages,
+            });
+        }
     }
     
-    // Fallback to database
+    // Try database (only if JSON mode is not enabled or JSON data is empty)
     CityPackage.getAll((err, results) => {
         if (err) {
-            console.error("Error fetching city packages:", err);
-            // Try JSON as last resort
-            const { getJsonData } = require("../utils/jsonDataLoader");
-            const jsonData = getJsonData("cityPackages");
+            console.warn("Database error, trying JSON fallback:", err.message);
+            // Try JSON as fallback
+            const jsonData = getJsonData("cityPackages", true);
             if (jsonData && jsonData.length > 0) {
-                const packages = jsonData.map((pkg) => {
-                    try {
-                        pkg.images = pkg.images ? JSON.parse(pkg.images) : [];
-                    } catch (e) {
-                        pkg.images = [];
-                    }
-                    if (pkg.categoryId !== null && pkg.categoryId !== undefined) {
-                        pkg.categoryId = parseInt(pkg.categoryId, 10);
-                    }
-                    return pkg;
-                });
+                const packages = processPackages(jsonData);
+                console.log("✓ Serving city packages from JSON fallback");
                 return res.status(200).json({
                     success: true,
                     data: packages,

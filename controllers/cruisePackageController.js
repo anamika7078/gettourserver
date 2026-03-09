@@ -100,20 +100,40 @@ const { createCruise, deleteCruise, getCruiseById, getCruises, updateCruise } = 
 
 const listCruises = async (_req, res) => {
     try {
-        // Try JSON data first if enabled
-        const { getJsonData } = require("../utils/jsonDataLoader");
-        const jsonData = getJsonData("cruises");
+        const { getJsonData, shouldPreferJsonData } = require("../utils/jsonDataLoader");
+        
+        // If JSON mode is enabled, use JSON first and skip database
+        if (shouldPreferJsonData()) {
+            const jsonData = getJsonData("cruises");
+            if (jsonData && jsonData.length > 0) {
+                console.log("✓ Serving cruises from JSON data");
+                return res.json({ success: true, data: jsonData });
+            }
+        }
+        
+        // Try database (only if JSON mode is not enabled or JSON data is empty)
+        try {
+            const rows = await getCruises();
+            if (rows && rows.length > 0) {
+                return res.json({ success: true, data: rows });
+            }
+        } catch (dbError) {
+            console.warn("Database error, trying JSON fallback:", dbError.message);
+        }
+        
+        // Fallback to JSON if database fails or returns empty
+        const jsonData = getJsonData("cruises", true);
         if (jsonData && jsonData.length > 0) {
+            console.log("✓ Serving cruises from JSON fallback");
             return res.json({ success: true, data: jsonData });
         }
         
-        // Fallback to database
-        const rows = await getCruises();
-        res.json({ success: true, data: rows });
+        return res.json({ success: true, data: [] });
     } catch (e) {
-        // Try JSON as last resort
+        console.error("listCruises error:", e);
+        // Last resort: try JSON
         const { getJsonData } = require("../utils/jsonDataLoader");
-        const jsonData = getJsonData("cruises");
+        const jsonData = getJsonData("cruises", true);
         if (jsonData && jsonData.length > 0) {
             return res.json({ success: true, data: jsonData });
         }

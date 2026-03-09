@@ -125,11 +125,18 @@ app.use("/api/json", jsonDataRoutes);
 
 app.listen(process.env.PORT, () => {
     console.log(`🚀 Server running on port ${process.env.PORT}`);
-    console.log("✅ All models auto-initializing...");
     
-    // Auto-seed dummy data if database is empty (for free Render instances without shell)
-    setTimeout(() => {
-        const { autoSeed } = require("./autoSeed.js");
-        autoSeed();
-    }, 3000); // Wait 3 seconds for tables to be created
+    // Skip database initialization if JSON mode is enabled
+    if (process.env.USE_JSON_DATA === "true" || process.env.USE_JSON_DATA === "1") {
+        console.log("📦 JSON data mode enabled - skipping database operations");
+        console.log("✅ All API endpoints will serve data from JSON files");
+    } else {
+        console.log("✅ All models auto-initializing...");
+        
+        // Auto-seed dummy data if database is empty (for free Render instances without shell)
+        setTimeout(() => {
+            const { autoSeed } = require("./autoSeed.js");
+            autoSeed();
+        }, 3000); // Wait 3 seconds for tables to be created
+    }
 });

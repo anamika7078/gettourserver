@@ -28,8 +28,9 @@ function shouldPreferJsonData() {
 }
 
 // Get data from JSON or return null
-function getJsonData(type) {
-    if (!shouldUseJsonData()) {
+function getJsonData(type, force = false) {
+    // If force is true, always try to get JSON data (for fallback scenarios)
+    if (!force && !shouldUseJsonData()) {
         return null;
     }
     

@@ -10,6 +10,12 @@ function hasData(tableName, callback) {
 
 // Add dummy data automatically on server start
 function autoSeed() {
+    // Skip if JSON mode is enabled
+    if (process.env.USE_JSON_DATA === "true" || process.env.USE_JSON_DATA === "1") {
+        console.log("📦 JSON data mode enabled - skipping auto-seed");
+        return;
+    }
+    
     console.log("🔍 Checking if database needs dummy data...");
 
     // Check if activities table has data

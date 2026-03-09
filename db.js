@@ -4,6 +4,7 @@
     - Uses a connection pool (prevents single idle connection timeout)
     - Adds lightweight keepalive ping
     - Handles common disconnect errors gracefully
+    - Supports JSON data mode to skip database connection
 */
 
 const dotenv = require("dotenv");
@@ -67,45 +68,80 @@ function ensureDatabase(callback) {
 
 // Create pool after DB exists
 let pool; // exported later
-ensureDatabase((err) => {
-    if (err) {
-        console.error("❌ Failed ensuring database:", err.message);
-        console.error("   Please check your database configuration:");
-        console.error(`   - DB_HOST: ${DB_HOST ? '✓ Set' : '✗ Missing'}`);
-        console.error(`   - DB_USER: ${DB_USER ? '✓ Set' : '✗ Missing'}`);
-        console.error(`   - DB_PASSWORD: ${DB_PASSWORD ? '✓ Set' : '✗ Missing'}`);
-        console.error(`   - DB_NAME: ${DB_NAME ? '✓ Set' : '✗ Missing'}`);
-        process.exit(1);
-    }
-    const poolConfig = {
-        host: DB_HOST,
-        user: DB_USER,
-        password: DB_PASSWORD,
-        database: DB_NAME,
-        port: parseInt(DB_PORT, 10),
-        waitForConnections: true,
-        connectionLimit: parseInt(DB_CONNECTION_LIMIT, 10),
-        queueLimit: 0,
-        multipleStatements: true,
-        connectTimeout: 10000,
+
+// Create a dummy pool for JSON mode or when database fails
+function createDummyPool(message) {
+    return {
+        query: function(sql, params, callback) {
+            const err = new Error(message);
+            if (typeof params === 'function') {
+                callback = params;
+                callback(err);
+            } else if (callback) {
+                callback(err);
+            } else {
+                return Promise.reject(err);
+            }
+        },
+        on: function() {},
+        getConnection: function(callback) {
+            if (callback) callback(new Error(message));
+            return Promise.reject(new Error(message));
+        }
     };
+}
 
-    // Add SSL if required (common for cloud databases)
-    if (DB_SSL === 'true' || DB_SSL === true) {
-        poolConfig.ssl = { rejectUnauthorized: false };
-    }
+// Skip database initialization if JSON mode is enabled
+if (process.env.USE_JSON_DATA === "true" || process.env.USE_JSON_DATA === "1") {
+    console.log("📦 JSON data mode enabled - skipping database connection");
+    console.log("✅ Server will use JSON files from backend/data/ directory");
+    pool = createDummyPool("Database not available - using JSON data mode");
+} else {
+    // Normal database initialization
+    ensureDatabase((err) => {
+        if (err) {
+            console.error("❌ Failed ensuring database:", err.message);
+            console.error("   Please check your database configuration:");
+            console.error(`   - DB_HOST: ${DB_HOST ? '✓ Set' : '✗ Missing'}`);
+            console.error(`   - DB_USER: ${DB_USER ? '✓ Set' : '✗ Missing'}`);
+            console.error(`   - DB_PASSWORD: ${DB_PASSWORD ? '✓ Set' : '✗ Missing'}`);
+            console.error(`   - DB_NAME: ${DB_NAME ? '✓ Set' : '✗ Missing'}`);
+            console.warn("⚠️  Database connection failed - API will use JSON data fallback");
+            // Don't exit - let the app continue with JSON data
+            pool = createDummyPool("Database connection failed");
+            return;
+        }
+        
+        const poolConfig = {
+            host: DB_HOST,
+            user: DB_USER,
+            password: DB_PASSWORD,
+            database: DB_NAME,
+            port: parseInt(DB_PORT, 10),
+            waitForConnections: true,
+            connectionLimit: parseInt(DB_CONNECTION_LIMIT, 10),
+            queueLimit: 0,
+            multipleStatements: true,
+            connectTimeout: 10000,
+        };
 
-    pool = mysql.createPool(poolConfig);
-    console.log(`✅ MySQL pool ready (db: ${DB_NAME})`);
+        // Add SSL if required (common for cloud databases)
+        if (DB_SSL === 'true' || DB_SSL === true) {
+            poolConfig.ssl = { rejectUnauthorized: false };
+        }
 
-    // Keepalive ping every 15 minutes to avoid idle disconnect (adjust if needed)
-    const KEEPALIVE_MS = 15 * 60 * 1000;
-    setInterval(() => {
-        pool.query("SELECT 1", (e) => {
-            if (e) console.warn("⚠️ Keepalive query failed:", e.code || e.message);
-        });
-    }, KEEPALIVE_MS).unref();
-});
+        pool = mysql.createPool(poolConfig);
+        console.log(`✅ MySQL pool ready (db: ${DB_NAME})`);
+
+        // Keepalive ping every 15 minutes to avoid idle disconnect (adjust if needed)
+        const KEEPALIVE_MS = 15 * 60 * 1000;
+        setInterval(() => {
+            pool.query("SELECT 1", (e) => {
+                if (e) console.warn("⚠️ Keepalive query failed:", e.code || e.message);
+            });
+        }, KEEPALIVE_MS).unref();
+    });
+}
 
 // Helper to run queries using promises (preferred)
 function query(sql, params = []) {
@@ -183,12 +219,6 @@ const dbInterface = {
 };
 
 // After pool initializes flush queued queries
-const originalEnsureCb = ensureDatabase;
-// We already call ensureDatabase earlier; append flush inside existing callback by wrapping
-// (Simpler: add flush directly after pool creation above.) Add hook below by monkey patching ensureDatabase if needed.
-// Flush occurs just after pool creation in the ensureDatabase callback block.
-
-// Modify existing ensureDatabase callback injection: easiest is append setTimeout flush once pool ready
 const FLUSH_CHECK_MS = 250;
 const flushInterval = setInterval(() => {
     if (pool) {

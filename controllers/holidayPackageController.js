@@ -5,22 +5,41 @@ const HolidayPackageModel = require("../models/holidayPackageModel.js");
 
 async function listHolidays(_req, res) {
     try {
-        // Try JSON data first if enabled
-        const { getJsonData } = require("../utils/jsonDataLoader");
-        const jsonData = getJsonData("holidays");
+        const { getJsonData, shouldPreferJsonData } = require("../utils/jsonDataLoader");
+        
+        // If JSON mode is enabled, use JSON first and skip database
+        if (shouldPreferJsonData()) {
+            const jsonData = getJsonData("holidays");
+            if (jsonData && jsonData.length > 0) {
+                console.log("✓ Serving holidays from JSON data");
+                return res.json({ success: true, data: jsonData });
+            }
+        }
+        
+        // Try database (only if JSON mode is not enabled or JSON data is empty)
+        try {
+            await HolidayPackageModel.ensureTable();
+            const rows = await HolidayPackageModel.getAll();
+            if (rows && rows.length > 0) {
+                return res.json({ success: true, data: rows });
+            }
+        } catch (dbError) {
+            console.warn("Database error, trying JSON fallback:", dbError.message);
+        }
+        
+        // Fallback to JSON if database fails or returns empty
+        const jsonData = getJsonData("holidays", true);
         if (jsonData && jsonData.length > 0) {
+            console.log("✓ Serving holidays from JSON fallback");
             return res.json({ success: true, data: jsonData });
         }
         
-        // Fallback to database
-        await HolidayPackageModel.ensureTable();
-        const rows = await HolidayPackageModel.getAll();
-        return res.json({ success: true, data: rows });
+        return res.json({ success: true, data: [] });
     } catch (err) {
         console.error("listHolidays error:", err);
-        // Try JSON as last resort
+        // Last resort: try JSON
         const { getJsonData } = require("../utils/jsonDataLoader");
-        const jsonData = getJsonData("holidays");
+        const jsonData = getJsonData("holidays", true);
         if (jsonData && jsonData.length > 0) {
             return res.json({ success: true, data: jsonData });
         }

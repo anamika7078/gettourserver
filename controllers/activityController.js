@@ -68,22 +68,41 @@ async function addActivity(req, res) {
 
 async function getActivities(_req, res) {
     try {
-        // Try to use JSON data if enabled
-        const { getJsonData } = require("../utils/jsonDataLoader");
-        const jsonData = getJsonData("activities");
+        const { getJsonData, shouldPreferJsonData } = require("../utils/jsonDataLoader");
+        
+        // If JSON mode is enabled, use JSON first and skip database
+        if (shouldPreferJsonData()) {
+            const jsonData = getJsonData("activities");
+            if (jsonData && jsonData.length > 0) {
+                console.log("✓ Serving activities from JSON data");
+                return res.json(jsonData);
+            }
+        }
+        
+        // Try database (only if JSON mode is not enabled or JSON data is empty)
+        try {
+            await ActivityModel.ensureTable();
+            const rows = await ActivityModel.getAll();
+            if (rows && rows.length > 0) {
+                return res.json(rows || []);
+            }
+        } catch (dbError) {
+            console.warn("Database error, trying JSON fallback:", dbError.message);
+        }
+        
+        // Fallback to JSON if database fails or returns empty
+        const jsonData = getJsonData("activities", true);
         if (jsonData && jsonData.length > 0) {
+            console.log("✓ Serving activities from JSON fallback");
             return res.json(jsonData);
         }
         
-        // Fallback to database
-        await ActivityModel.ensureTable();
-        const rows = await ActivityModel.getAll();
-        return res.json(rows || []);
+        return res.json([]);
     } catch (err) {
         console.error("getActivities error:", err);
-        // Try JSON as last resort
+        // Last resort: try JSON
         const { getJsonData } = require("../utils/jsonDataLoader");
-        const jsonData = getJsonData("activities");
+        const jsonData = getJsonData("activities", true);
         if (jsonData && jsonData.length > 0) {
             return res.json(jsonData);
         }

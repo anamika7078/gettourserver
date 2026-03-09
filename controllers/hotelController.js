@@ -385,34 +385,56 @@ async function addHotel(req, res) {
 
 async function getHotels(req, res) {
     try {
-        // Try JSON data first if enabled
-        const { getJsonData } = require("../utils/jsonDataLoader");
-        const jsonData = getJsonData("hotels");
+        const { getJsonData, shouldPreferJsonData } = require("../utils/jsonDataLoader");
+        
+        // If JSON mode is enabled, use JSON first and skip database
+        if (shouldPreferJsonData()) {
+            const jsonData = getJsonData("hotels");
+            if (jsonData && jsonData.length > 0) {
+                const mapped = jsonData.map((h) => {
+                    const parsedRooms = parseRoomsField(h.rooms);
+                    const images = parseImagesField(h.images);
+                    return { ...h, rooms: parsedRooms, images };
+                });
+                console.log("✓ Serving hotels from JSON data");
+                return res.json(mapped);
+            }
+        }
+        
+        // Try database (only if JSON mode is not enabled or JSON data is empty)
+        try {
+            await HotelModel.ensureTable();
+            const hotels = await HotelModel.getAll();
+
+            const mapped = (hotels || []).map((h) => {
+                const parsedRooms = parseRoomsField(h.rooms);
+                const images = parseImagesField(h.images);
+                return { ...h, rooms: parsedRooms, images };
+            });
+
+            return res.json(mapped);
+        } catch (dbError) {
+            console.warn("Database error, trying JSON fallback:", dbError.message);
+        }
+        
+        // Fallback to JSON if database fails
+        const jsonData = getJsonData("hotels", true);
         if (jsonData && jsonData.length > 0) {
             const mapped = jsonData.map((h) => {
                 const parsedRooms = parseRoomsField(h.rooms);
                 const images = parseImagesField(h.images);
                 return { ...h, rooms: parsedRooms, images };
             });
+            console.log("✓ Serving hotels from JSON fallback");
             return res.json(mapped);
         }
         
-        // Fallback to database
-        await HotelModel.ensureTable();
-        const hotels = await HotelModel.getAll();
-
-        const mapped = (hotels || []).map((h) => {
-            const parsedRooms = parseRoomsField(h.rooms);
-            const images = parseImagesField(h.images);
-            return { ...h, rooms: parsedRooms, images };
-        });
-
-        res.json(mapped);
+        res.json([]);
     } catch (err) {
         console.error("getHotels error", err);
-        // Try JSON as last resort
+        // Last resort: try JSON
         const { getJsonData } = require("../utils/jsonDataLoader");
-        const jsonData = getJsonData("hotels");
+        const jsonData = getJsonData("hotels", true);
         if (jsonData && jsonData.length > 0) {
             const mapped = jsonData.map((h) => {
                 const parsedRooms = parseRoomsField(h.rooms);

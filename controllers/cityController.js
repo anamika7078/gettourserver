@@ -43,21 +43,25 @@ exports.uploadImage = upload.single("image");
 
 // Get all cities
 exports.getAllCities = (req, res) => {
-    // Try JSON data first if enabled
-    const { getJsonData } = require("../utils/jsonDataLoader");
-    const jsonData = getJsonData("cities");
-    if (jsonData && jsonData.length > 0) {
-        return res.json({ success: true, data: jsonData });
+    const { getJsonData, shouldPreferJsonData } = require("../utils/jsonDataLoader");
+    
+    // If JSON mode is enabled, use JSON first and skip database
+    if (shouldPreferJsonData()) {
+        const jsonData = getJsonData("cities");
+        if (jsonData && jsonData.length > 0) {
+            console.log("✓ Serving cities from JSON data");
+            return res.json({ success: true, data: jsonData });
+        }
     }
     
-    // Fallback to database
+    // Try database (only if JSON mode is not enabled or JSON data is empty)
     City.getAll((err, results) => {
         if (err) {
-            console.error("Error fetching cities:", err);
-            // Try JSON as last resort
-            const { getJsonData } = require("../utils/jsonDataLoader");
-            const jsonData = getJsonData("cities");
+            console.warn("Database error, trying JSON fallback:", err.message);
+            // Try JSON as fallback
+            const jsonData = getJsonData("cities", true);
             if (jsonData && jsonData.length > 0) {
+                console.log("✓ Serving cities from JSON fallback");
                 return res.json({ success: true, data: jsonData });
             }
             return res.status(500).json({
@@ -71,7 +75,7 @@ exports.getAllCities = (req, res) => {
             id: parseInt(city.id, 10)
         }));
 
-        console.log(`✓ Fetched ${cities.length} cities`);
+        console.log(`✓ Fetched ${cities.length} cities from database`);
 
         res.json({ success: true, data: cities });
     });
