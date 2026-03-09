@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "title": "European Adventure - 7 Days",
+    "destination": "Paris, Rome, Barcelona",
+    "duration": "7 days / 6 nights",
+    "price": 2500.00,
+    "category": "Europe",
+    "details": "Explore three of Europe's most beautiful cities. Includes flights, hotels, breakfast, and guided tours.",
+    "images": "[\"europe1.jpg\", \"europe2.jpg\", \"europe3.jpg\"]",
+    "created_at": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": 2,
+    "title": "Tropical Paradise - Maldives",
+    "destination": "Maldives",
+    "duration": "5 days / 4 nights",
+    "price": 1800.00,
+    "category": "Beach",
+    "details": "Relax in luxury water villas with crystal-clear waters. Includes all meals, water sports, and spa access.",
+    "images": "[\"maldives1.jpg\", \"maldives2.jpg\"]",
+    "created_at": "2024-01-02T00:00:00.000Z"
+  },
+  {
+    "id": 3,
+    "title": "Asian Discovery Tour",
+    "destination": "Tokyo, Singapore, Bangkok",
+    "duration": "10 days / 9 nights",
+    "price": 3200.00,
+    "category": "Asia",
+    "details": "Experience the best of Asia with cultural tours, amazing food, and modern cities. All transportation and hotels included.",
+    "images": "[\"asia1.jpg\", \"asia2.jpg\", \"asia3.jpg\"]",
+    "created_at": "2024-01-03T00:00:00.000Z"
+  },
+  {
+    "id": 4,
+    "title": "Safari Adventure - Kenya",
+    "destination": "Nairobi, Masai Mara",
+    "duration": "6 days / 5 nights",
+    "price": 2200.00,
+    "category": "Adventure",
+    "details": "Witness the Great Migration and Big Five. Includes game drives, accommodation, and all meals.",
+    "images": "[\"safari1.jpg\", \"safari2.jpg\"]",
+    "created_at": "2024-01-04T00:00:00.000Z"
+  }
+]
+

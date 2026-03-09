@@ -385,6 +385,19 @@ async function addHotel(req, res) {
 
 async function getHotels(req, res) {
     try {
+        // Try JSON data first if enabled
+        const { getJsonData } = require("../utils/jsonDataLoader");
+        const jsonData = getJsonData("hotels");
+        if (jsonData && jsonData.length > 0) {
+            const mapped = jsonData.map((h) => {
+                const parsedRooms = parseRoomsField(h.rooms);
+                const images = parseImagesField(h.images);
+                return { ...h, rooms: parsedRooms, images };
+            });
+            return res.json(mapped);
+        }
+        
+        // Fallback to database
         await HotelModel.ensureTable();
         const hotels = await HotelModel.getAll();
 
@@ -397,6 +410,17 @@ async function getHotels(req, res) {
         res.json(mapped);
     } catch (err) {
         console.error("getHotels error", err);
+        // Try JSON as last resort
+        const { getJsonData } = require("../utils/jsonDataLoader");
+        const jsonData = getJsonData("hotels");
+        if (jsonData && jsonData.length > 0) {
+            const mapped = jsonData.map((h) => {
+                const parsedRooms = parseRoomsField(h.rooms);
+                const images = parseImagesField(h.images);
+                return { ...h, rooms: parsedRooms, images };
+            });
+            return res.json(mapped);
+        }
         res.status(500).json({ error: err.message || "Server error" });
     }
 }

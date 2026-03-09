@@ -120,11 +120,25 @@ async function createVisa(req, res) {
 
 async function listVisas(req, res) {
     try {
+        // Try JSON data first if enabled
+        const { getJsonData } = require("../utils/jsonDataLoader");
+        const jsonData = getJsonData("visas");
+        if (jsonData && jsonData.length > 0) {
+            return res.json(jsonData);
+        }
+        
+        // Fallback to database
         await ensureVisaTable();
         const rows = await getAllVisas();
         res.json(rows || []);
     } catch (err) {
         console.error("listVisas error", err);
+        // Try JSON as last resort
+        const { getJsonData } = require("../utils/jsonDataLoader");
+        const jsonData = getJsonData("visas");
+        if (jsonData && jsonData.length > 0) {
+            return res.json(jsonData);
+        }
         res.status(500).json({ success: false, message: err.message || "Server error" });
     }
 }

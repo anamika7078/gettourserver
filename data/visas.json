@@ -1,0 +1,57 @@
+[
+  {
+    "id": 1,
+    "country": "United States",
+    "price": 185.00,
+    "subject": "Tourist Visa",
+    "image": "usa-visa.jpg",
+    "overview": "Apply for a US tourist visa to explore America's iconic landmarks, national parks, and vibrant cities. Processing time: 2-3 weeks.",
+    "created_at": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": 2,
+    "country": "United Kingdom",
+    "price": 120.00,
+    "subject": "Standard Visitor Visa",
+    "image": "uk-visa.jpg",
+    "overview": "Visit the UK for tourism, business, or to see family and friends. Valid for up to 6 months. Processing time: 3 weeks.",
+    "created_at": "2024-01-02T00:00:00.000Z"
+  },
+  {
+    "id": 3,
+    "country": "Schengen Area",
+    "price": 80.00,
+    "subject": "Schengen Visa",
+    "image": "schengen-visa.jpg",
+    "overview": "Travel to 27 European countries with a single Schengen visa. Includes France, Germany, Italy, Spain, and more. Processing time: 2-4 weeks.",
+    "created_at": "2024-01-03T00:00:00.000Z"
+  },
+  {
+    "id": 4,
+    "country": "Australia",
+    "price": 150.00,
+    "subject": "Tourist Visa",
+    "image": "australia-visa.jpg",
+    "overview": "Explore Australia's stunning landscapes, beaches, and cities. Electronic visa available for many nationalities. Processing time: 1-2 weeks.",
+    "created_at": "2024-01-04T00:00:00.000Z"
+  },
+  {
+    "id": 5,
+    "country": "Japan",
+    "price": 45.00,
+    "subject": "Tourist Visa",
+    "image": "japan-visa.jpg",
+    "overview": "Discover Japan's unique culture, technology, and natural beauty. Visa-free for many countries, or apply for tourist visa. Processing time: 1 week.",
+    "created_at": "2024-01-05T00:00:00.000Z"
+  },
+  {
+    "id": 6,
+    "country": "Dubai/UAE",
+    "price": 100.00,
+    "subject": "Tourist Visa",
+    "image": "dubai-visa.jpg",
+    "overview": "Visit Dubai and the UAE for tourism or business. Fast processing available. Valid for 30-90 days depending on type.",
+    "created_at": "2024-01-06T00:00:00.000Z"
+  }
+]
+

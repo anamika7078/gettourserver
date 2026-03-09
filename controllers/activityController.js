@@ -68,11 +68,25 @@ async function addActivity(req, res) {
 
 async function getActivities(_req, res) {
     try {
+        // Try to use JSON data if enabled
+        const { getJsonData } = require("../utils/jsonDataLoader");
+        const jsonData = getJsonData("activities");
+        if (jsonData && jsonData.length > 0) {
+            return res.json(jsonData);
+        }
+        
+        // Fallback to database
         await ActivityModel.ensureTable();
         const rows = await ActivityModel.getAll();
         return res.json(rows || []);
     } catch (err) {
         console.error("getActivities error:", err);
+        // Try JSON as last resort
+        const { getJsonData } = require("../utils/jsonDataLoader");
+        const jsonData = getJsonData("activities");
+        if (jsonData && jsonData.length > 0) {
+            return res.json(jsonData);
+        }
         return res.status(500).json({ success: false, error: err.message || "Server error" });
     }
 }

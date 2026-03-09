@@ -1,0 +1,36 @@
+[
+  {
+    "id": 1,
+    "hotel_name": "Grand Luxury Hotel",
+    "address": "123 Main Street, Dubai, UAE",
+    "map_link": "https://maps.google.com/?q=Grand+Luxury+Hotel+Dubai",
+    "description": "A luxurious 5-star hotel in the heart of Dubai with stunning views and world-class amenities.",
+    "facilities": "Swimming Pool, Spa, Gym, Restaurant, Bar, Free WiFi, Parking, Airport Shuttle",
+    "rooms": "[{\"type\":\"Deluxe Room\",\"price\":200,\"amenities\":[\"WiFi\",\"TV\",\"Mini Bar\"]},{\"type\":\"Suite\",\"price\":400,\"amenities\":[\"WiFi\",\"TV\",\"Mini Bar\",\"Jacuzzi\",\"Balcony\"]},{\"type\":\"Presidential Suite\",\"price\":800,\"amenities\":[\"WiFi\",\"TV\",\"Mini Bar\",\"Jacuzzi\",\"Balcony\",\"Butler Service\"]}]",
+    "images": "[\"hotel1.jpg\", \"hotel2.jpg\", \"hotel3.jpg\"]",
+    "created_at": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": 2,
+    "hotel_name": "Seaside Resort",
+    "address": "456 Beach Road, Maldives",
+    "map_link": "https://maps.google.com/?q=Seaside+Resort+Maldives",
+    "description": "Beautiful beachfront resort with private villas and direct beach access. Perfect for a relaxing getaway.",
+    "facilities": "Private Beach, Water Sports, Spa, Restaurant, Bar, Free WiFi, Airport Transfer",
+    "rooms": "[{\"type\":\"Beach Villa\",\"price\":300,\"amenities\":[\"WiFi\",\"TV\",\"Private Pool\",\"Beach Access\"]},{\"type\":\"Water Villa\",\"price\":500,\"amenities\":[\"WiFi\",\"TV\",\"Private Pool\",\"Direct Ocean Access\"]}]",
+    "images": "[\"resort1.jpg\", \"resort2.jpg\"]",
+    "created_at": "2024-01-02T00:00:00.000Z"
+  },
+  {
+    "id": 3,
+    "hotel_name": "City Center Hotel",
+    "address": "789 Downtown Avenue, New York, USA",
+    "map_link": "https://maps.google.com/?q=City+Center+Hotel+New+York",
+    "description": "Modern hotel in the heart of Manhattan, close to major attractions and business districts.",
+    "facilities": "Fitness Center, Business Center, Restaurant, Bar, Free WiFi, Parking, Concierge",
+    "rooms": "[{\"type\":\"Standard Room\",\"price\":150,\"amenities\":[\"WiFi\",\"TV\",\"Work Desk\"]},{\"type\":\"Executive Room\",\"price\":250,\"amenities\":[\"WiFi\",\"TV\",\"Work Desk\",\"Lounge Access\"]}]",
+    "images": "[\"cityhotel1.jpg\", \"cityhotel2.jpg\"]",
+    "created_at": "2024-01-03T00:00:00.000Z"
+  }
+]
+

@@ -1,0 +1,55 @@
+[
+  {
+    "id": 1,
+    "title": "Dubai City Highlights Tour",
+    "cityName": "Dubai",
+    "categoryId": 1,
+    "cityImage": "dubai-highlights.jpg",
+    "locationUrl": "https://maps.google.com/?q=Dubai",
+    "duration": "4 hours",
+    "price": 89.99,
+    "images": "[\"package1.jpg\", \"package2.jpg\"]",
+    "details": "Explore the iconic landmarks of Dubai including Burj Khalifa, Dubai Mall, and Palm Jumeirah. Includes professional guide and transportation.",
+    "created_at": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": 2,
+    "title": "Dubai Food & Culture Walk",
+    "cityName": "Dubai",
+    "categoryId": 2,
+    "cityImage": "dubai-food.jpg",
+    "locationUrl": "https://maps.google.com/?q=Dubai+Food+District",
+    "duration": "3 hours",
+    "price": 65.00,
+    "images": "[\"food1.jpg\", \"food2.jpg\"]",
+    "details": "Taste authentic Emirati cuisine and learn about local food culture. Visit traditional markets and modern restaurants.",
+    "created_at": "2024-01-02T00:00:00.000Z"
+  },
+  {
+    "id": 3,
+    "title": "Paris Historical Walking Tour",
+    "cityName": "Paris",
+    "categoryId": 4,
+    "cityImage": "paris-historical.jpg",
+    "locationUrl": "https://maps.google.com/?q=Paris",
+    "duration": "5 hours",
+    "price": 75.00,
+    "images": "[\"paris1.jpg\", \"paris2.jpg\"]",
+    "details": "Discover the rich history of Paris through its iconic monuments, charming streets, and hidden gems. Expert local guide included.",
+    "created_at": "2024-01-03T00:00:00.000Z"
+  },
+  {
+    "id": 4,
+    "title": "Tokyo Shopping Experience",
+    "cityName": "Tokyo",
+    "categoryId": 6,
+    "cityImage": "tokyo-shopping.jpg",
+    "locationUrl": "https://maps.google.com/?q=Tokyo+Shopping",
+    "duration": "6 hours",
+    "price": 95.00,
+    "images": "[\"tokyo1.jpg\", \"tokyo2.jpg\"]",
+    "details": "Explore Tokyo's best shopping districts from traditional markets to modern malls. Includes shopping guide and tips.",
+    "created_at": "2024-01-04T00:00:00.000Z"
+  }
+]
+

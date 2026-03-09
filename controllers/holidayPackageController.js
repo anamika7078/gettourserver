@@ -5,11 +5,25 @@ const HolidayPackageModel = require("../models/holidayPackageModel.js");
 
 async function listHolidays(_req, res) {
     try {
+        // Try JSON data first if enabled
+        const { getJsonData } = require("../utils/jsonDataLoader");
+        const jsonData = getJsonData("holidays");
+        if (jsonData && jsonData.length > 0) {
+            return res.json({ success: true, data: jsonData });
+        }
+        
+        // Fallback to database
         await HolidayPackageModel.ensureTable();
         const rows = await HolidayPackageModel.getAll();
         return res.json({ success: true, data: rows });
     } catch (err) {
         console.error("listHolidays error:", err);
+        // Try JSON as last resort
+        const { getJsonData } = require("../utils/jsonDataLoader");
+        const jsonData = getJsonData("holidays");
+        if (jsonData && jsonData.length > 0) {
+            return res.json({ success: true, data: jsonData });
+        }
         return res.status(500).json({ success: false, error: err.message || "Server error" });
     }
 }

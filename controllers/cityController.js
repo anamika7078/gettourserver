@@ -43,9 +43,23 @@ exports.uploadImage = upload.single("image");
 
 // Get all cities
 exports.getAllCities = (req, res) => {
+    // Try JSON data first if enabled
+    const { getJsonData } = require("../utils/jsonDataLoader");
+    const jsonData = getJsonData("cities");
+    if (jsonData && jsonData.length > 0) {
+        return res.json({ success: true, data: jsonData });
+    }
+    
+    // Fallback to database
     City.getAll((err, results) => {
         if (err) {
             console.error("Error fetching cities:", err);
+            // Try JSON as last resort
+            const { getJsonData } = require("../utils/jsonDataLoader");
+            const jsonData = getJsonData("cities");
+            if (jsonData && jsonData.length > 0) {
+                return res.json({ success: true, data: jsonData });
+            }
             return res.status(500).json({
                 success: false,
                 error: "Failed to fetch cities"

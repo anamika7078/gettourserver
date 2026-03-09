@@ -107,9 +107,51 @@ exports.createCityPackage = (req, res) => {
 
 // Get all city packages
 exports.getAllCityPackages = (req, res) => {
+    // Try JSON data first if enabled
+    const { getJsonData } = require("../utils/jsonDataLoader");
+    const jsonData = getJsonData("cityPackages");
+    if (jsonData && jsonData.length > 0) {
+        const packages = jsonData.map((pkg) => {
+            try {
+                pkg.images = pkg.images ? JSON.parse(pkg.images) : [];
+            } catch (e) {
+                pkg.images = [];
+            }
+            if (pkg.categoryId !== null && pkg.categoryId !== undefined) {
+                pkg.categoryId = parseInt(pkg.categoryId, 10);
+            }
+            return pkg;
+        });
+        return res.status(200).json({
+            success: true,
+            data: packages,
+        });
+    }
+    
+    // Fallback to database
     CityPackage.getAll((err, results) => {
         if (err) {
             console.error("Error fetching city packages:", err);
+            // Try JSON as last resort
+            const { getJsonData } = require("../utils/jsonDataLoader");
+            const jsonData = getJsonData("cityPackages");
+            if (jsonData && jsonData.length > 0) {
+                const packages = jsonData.map((pkg) => {
+                    try {
+                        pkg.images = pkg.images ? JSON.parse(pkg.images) : [];
+                    } catch (e) {
+                        pkg.images = [];
+                    }
+                    if (pkg.categoryId !== null && pkg.categoryId !== undefined) {
+                        pkg.categoryId = parseInt(pkg.categoryId, 10);
+                    }
+                    return pkg;
+                });
+                return res.status(200).json({
+                    success: true,
+                    data: packages,
+                });
+            }
             return res.status(500).json({
                 success: false,
                 error: "Failed to fetch city packages",

@@ -100,9 +100,23 @@ const { createCruise, deleteCruise, getCruiseById, getCruises, updateCruise } = 
 
 const listCruises = async (_req, res) => {
     try {
+        // Try JSON data first if enabled
+        const { getJsonData } = require("../utils/jsonDataLoader");
+        const jsonData = getJsonData("cruises");
+        if (jsonData && jsonData.length > 0) {
+            return res.json({ success: true, data: jsonData });
+        }
+        
+        // Fallback to database
         const rows = await getCruises();
         res.json({ success: true, data: rows });
     } catch (e) {
+        // Try JSON as last resort
+        const { getJsonData } = require("../utils/jsonDataLoader");
+        const jsonData = getJsonData("cruises");
+        if (jsonData && jsonData.length > 0) {
+            return res.json({ success: true, data: jsonData });
+        }
         res.status(500).json({ success: false, message: "Server error" });
     }
 };

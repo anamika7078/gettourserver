@@ -68,6 +68,7 @@ const roomBookingRoutes = require("./routes/roomBookingRoutes.js");
 const visaApplicationRoutes = require("./routes/visaApplicationRoutes.js");
 const visaRoutes = require("./routes/visaRoutes.js");
 const visaSubjectRoutes = require("./routes/visaSubjectRoutes.js");
+const jsonDataRoutes = require("./routes/jsonDataRoutes.js");
 
 
 dotenv.config();
@@ -116,6 +117,8 @@ app.use("/api/visas", visaRoutes);
 app.use("/api/holiday-categories", holidayCategoryRoutes);
 app.use("/api/visa-subjects", visaSubjectRoutes);
 app.use("/api/hero", heroImagesRoutes);
+// JSON data routes (fallback when database is not available)
+app.use("/api/json", jsonDataRoutes);
 
 
 
