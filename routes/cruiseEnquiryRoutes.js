@@ -13,8 +13,10 @@ const { ensureCruiseEnquiryTable } = require("../models/cruiseEnquiryModel.js");
 
 const router = express.Router();
 
-// ensure table exists when routes load
-ensureCruiseEnquiryTable();
+// ensure table exists when routes load (skip if JSON mode)
+if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+    ensureCruiseEnquiryTable();
+}
 
 router.post("/", submitCruiseEnquiry);
 router.get("/", listCruiseEnquiries);

@@ -18,8 +18,10 @@ const router = express.Router();
 const uploadDir = path.join(process.cwd(), "uploads", "cruises");
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
-// ensure table exists
-ensureCruiseTable();
+// ensure table exists (skip if JSON mode)
+if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+    ensureCruiseTable();
+}
 
 const storage = multer.diskStorage({
     destination: function (_req, _file, cb) {

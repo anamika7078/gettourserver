@@ -14,8 +14,10 @@ const { createContactTable } = require("../models/contactModel.js");
 
 const router = express.Router();
 
-// Auto-create the table when this route loads
-createContactTable();
+// Auto-create the table when this route loads (skip if JSON mode)
+if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+    createContactTable();
+}
 
 // POST /api/contact
 router.post("/", submitContactForm);

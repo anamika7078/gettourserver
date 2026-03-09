@@ -83,7 +83,10 @@ const {
     upsertHeroImages,
 } = require("../models/heroImagesModel.js");
 
-ensureHeroImagesTable();
+// Ensure table exists (skip if JSON mode)
+if (process.env.USE_JSON_DATA !== "true" && process.env.USE_JSON_DATA !== "1") {
+    ensureHeroImagesTable();
+}
 
 function publicUrlFor(page, filename, req) {
     if (!filename) return null;
